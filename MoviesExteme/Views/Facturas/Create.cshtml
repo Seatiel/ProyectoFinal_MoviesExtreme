@@ -7,57 +7,75 @@
 <h2>Create</h2>
 
 
-@using (Html.BeginForm()) 
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
         <h4>Facturas</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
-            @Html.LabelFor(model => model.ClienteId, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ClienteId, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.ClienteId, "", new { @class = "text-danger" })
+            <div class="input-group">
+                <input class="form-control input-group-lg col-2" type="text" id="tbFacturaId" placeholder="FacturaId" />
+                <button class="btn btn-group-sm btn-success" type="button" id="btnBuscar" onclick="Buscar()">Buscar</button>
             </div>
         </div>
-
         <div class="form-group">
-            @Html.LabelFor(model => model.Fecha, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Fecha, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Fecha, "", new { @class = "text-danger" })
+            <div class=" input-group">
+                <span class="input-group-addon">Fecha</span>
+                <input class="form-control input-group input" type="text" placeholder="Fecha" id="dpFecha" required readonly />
             </div>
         </div>
-
         <div class="form-group">
-            @Html.LabelFor(model => model.CantidadPelicula, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.CantidadPelicula, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.CantidadPelicula, "", new { @class = "text-danger" })
+            <div class="input-group">
+                <span class="input-group-addon">Pelidulas</span>
+                <select class="form-control selected" id="PeliculaList">
+                    <option value="0" disabled selected> </option>
+                </select>
             </div>
         </div>
-
         <div class="form-group">
-            @Html.LabelFor(model => model.SubTotal, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.SubTotal, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.SubTotal, "", new { @class = "text-danger" })
+            <div class="input-group">
+                <span class="input-group-addon">Precio</span>
+                <input class="form-control input-group-sm col-2" type="text" id="tbPrecio" placeholder="Precio" disabled />
+                <span class="input-group-addon">Cantidad</span>
+                <input class="form-control input-group-sm col-2" type="text" id="tbCantidad" placeholder="Cantidad" />
+                <button type="button" class="btn btn-success col-sm-2" id="btnAgregar" onclick="AgregarDetalle()">Agregar</button>
             </div>
         </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Total, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Total, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Total, "", new { @class = "text-danger" })
+        <div>
+            <div id="content">
+                <table id="tabla" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>PeliculaId</th>
+                            <th>Pelicula</th>
+                            <th>Precio</th>
+                            <th>Cantidad</th>
+                            <th>Monto</th>
+                            <th>Eliminar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbBody"></tbody>
+                </table>
             </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+            <div class="form-group">
+                <div class="input-group">
+                    <span class="input-group-addon">SubTotal:</span>
+                    <input class="form-control input-group-lg col-2" type="text" id="tbSubTotal" value="0" readonly />
+                    <span class="input-group-addon">Total:</span>
+                    <input class="form-control input-group-lg col-2" type="text" id="tbTotal" value="0" readonly />
+                </div>
+            </div>
+            <div class="form-group text-center col-xl-12">
+                <div class="col-md-offset-2 col-md-10">
+                    <button type="button" class="btn btn-info col-sm-2" id="btnLimpiar" onclick="Limpiar(0)">Nuevo</button>
+                    <button type="button" class="btn btn-success col-sm-2" id="btnCrear" onclick="CrearFactura()">Crear</button>
+                    <button type="button" class="btn btn-warning col-sm-2" id="btnModificar" onclick="ConstruirFactura(1)">Modificar</button>
+                    <button type="button" class="btn btn-danger col-sm-2" id="btnEliminar" onclick="ConstruirFactura(2)">Eliminar</button>
+                </div>
             </div>
         </div>
     </div>
@@ -69,4 +87,162 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="http://code.google.com/p/jquery-ui/source/browse/branches/labs/datepicker2/ui/i18n/jquery.ui.datepicker-es.js?r=3875"></script>
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Scripts/moment-with-locales.min.js"></script>
+    <script type="text/javascript">
+        //Id
+        $(document).ready(function () {
+            NextId();
+        });        
+
+        var contador = 0;
+        var id; Detalle = new Array(), FactId = 0;
+
+        //ArmaFactura
+        function ConstruirFactura(opc) {
+            var Id = $('#tbFacturaId').val();
+            var MedicinaListId = $('#PeliculaList').find('option:selected').attr('id');
+            var MedicinaList = $('#PeliculaList').find('option:selected');
+            var total = $('#tbTotal').val();
+            var fecha = $('#dpFecha').val();
+
+            var cabeza = {
+                FacturaId: Id,
+                PeliculaId: PeliculaList,
+                Titulo: PeliculaList.text(),
+                Fecha: fecha,
+                Total: total
+            }
+            var EncabezadoDetalle = {
+                Encabezado: cabeza,
+                Detalle: Detalle
+            }
+            if (opc == 1) {
+                ModificarFactura(EncabezadoDetalle);
+            }
+            else if (opc == 2) {
+                EliminarFactura(EncabezadoDetalle);
+            }
+        }
+
+        //Crear
+        function CrearFactura() {
+            var PeliculaListtId = $('#PeliculaList').find('option:selected').attr('id');
+            var PeliculaList = $('#PeliculaList').find('option:selected');
+            var Id = $('#tbFacturaId').val();
+            var cant = $('#tbCantidad').val();
+            var SubTt = $('#tbSubTotal').val();            
+            var total = $('#tbTotal').val();
+            var fecha = $('#dpFecha').val();
+
+            var Venta = {
+                FacturaId: id,
+                PeliculaId: PeliculaListId,
+                Titulo: PeliculaList.text(),                
+                Cantidad: cant,
+                SubTotal: SubTt,                
+                Fecha: fecha,
+                Total: total
+            }
+            var EncabezadoDetalle = {
+                Encabezado: Venta,
+                Detalle: Detalle
+            }
+            Enviar(EncabezadoDetalle);
+        }
+
+        function Enviar(data) {
+            $.ajax(
+                {
+                    method: "POST",
+                    url: "/Facturas/GuardarFactura",
+                    data: data,
+                    success: function (id) {
+                        if (parseInt(id) > 0) {
+                            FactId = id;
+                        }
+                    }
+                });
+        };
+
+        //Eliminar
+        function EliminarFactura(EncabezadoDetalle) {
+            $.ajax({
+                method: "POST",
+                url: "/Facturas/Eliminar",
+                data: EncabezadoDetalle,
+                success: function (res) {
+                    if (res != null) {
+                        alert("La factura ha sido eliminada correctamente.");
+                    }
+                    else {
+                        alert("No se ha podido procesar su solicitud.");
+                    }
+                    LimpiarCampos(0);
+                }
+            })
+        }
+
+        //Detalle(Actualizar)
+        function ActualizarTabla() {
+            if ($('#tbBody tr').length > 0)
+                $('#tbBody tr').remove();
+            var subTotal = 0; var itbis = 0.18; var it = 0; var total = 0; contador++;
+            $.each(Detalle, function (index, detalle) {
+                var fila = '<tr>';
+                fila += '<td>' + (index + 1) + '</td>';
+                fila += '<td>' + detalle.FacturaId + '</td>';
+                fila += '<td>' + detalle.Titulo + '</td>';
+                fila += '<td>' + detalle.Precio + '</td>';
+                fila += '<td>' + detalle.Cantidad + '</td>';               
+                fila += '<td>' + '<input type="button" value="Delete" onclick="deleteRow(this)"/>' + '</td>';
+                fila += '</tr>';
+                $('#tabla').append(fila);
+                subTotal += detalle.Total;                
+                total = subTotal;
+            });
+            $('#tbSubTotal').val(subTotal);            
+            $('#tbTotal').val(total);
+        }
+
+        //Agregar(Boton)
+        function AgregarDetalle() {
+            var Id = $('#tbVentaId').val();
+            var FacturaId = $('#MedicinaList').find('option:selected').attr('id');
+            var Titulo = $('#MedicinaList').find('option:selected');
+            var Precio = $('#tbPrecio').val();
+            var Cantidad = $('#tbCantidad').val();            
+            var subTotal = (parseInt(Cantidad) * parseFloat(Precio));
+            var detalle = {
+                Id: id,
+                FacturaId: Id,
+                PeliculaId: MedicinaId,
+                Titulo: Titulo.text(),
+                Precio: Precio,
+                Cantidad: Cantidad,                
+                subTotal: subTotal
+            }
+            Detalle.push(detalle);
+            ActualizarTabla();
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

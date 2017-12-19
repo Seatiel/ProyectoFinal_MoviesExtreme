@@ -11,9 +11,7 @@ namespace MoviesExteme.Models
         [Key]
         public int ClienteId { get; set; }
 
-        public string Nombres { get; set; }
-
-        public string Apellido { get; set; }
+        public string Nombres { get; set; }        
 
         public string Direccion { get; set; }
 

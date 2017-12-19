@@ -3,6 +3,7 @@ using MoviesExteme.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 
@@ -30,6 +31,24 @@ namespace MoviesExteme.BLL
                 }
             }
             return resultado;
+        }
+
+        public static Facturas Buscar(int facturaId)
+        {
+            Facturas factura = null;
+            using (var db = new MoviesExtremeDb())
+            {
+                try
+                {
+                    factura = db.Factura.Find(facturaId);
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+            }
+            return factura;
         }
 
         public static EncabezadoDetalle Buscar(int? facturaId)
@@ -109,11 +128,11 @@ namespace MoviesExteme.BLL
         public static List<Facturas> Listar()
         {
             List<Facturas> listado = null;
-            using (var conexion = new MoviesExtremeDb())
+            using (var db = new MoviesExtremeDb())
             {
                 try
                 {
-                    listado = conexion.Factura.OrderBy(f => f.Fecha).ToList();
+                    listado = db.Factura.ToList();
                 }
                 catch (Exception)
                 {
@@ -123,6 +142,24 @@ namespace MoviesExteme.BLL
             }
             return listado;
         }
+
+        //public static List<Facturas> Listar()
+        //{
+        //    List<Facturas> listado = null;
+        //    using (var conexion = new MoviesExtremeDb())
+        //    {
+        //        try
+        //        {
+        //            listado = conexion.Factura.OrderBy(f => f.Fecha).ToList();
+        //        }
+        //        catch (Exception)
+        //        {
+
+        //            throw;
+        //        }
+        //    }
+        //    return listado;
+        //}
 
         public static List<Facturas> Listar(int? clienteId)
         {
@@ -216,6 +253,7 @@ namespace MoviesExteme.BLL
             }
             return false;
         }
+
         public static bool ModificarEncabezado(int? facturaId)
         {
             using (var conexion = new MoviesExtremeDb())
@@ -235,7 +273,29 @@ namespace MoviesExteme.BLL
                 }
             }
             return false;
-        }        
-        
+        }
+
+        public static int Identity()
+        {
+            int identity = 0;
+            string con =
+            @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C: \Users\seati\OneDrive for Business 1\Diplomado ITLA\MoviesExteme\MoviesExteme\App_Data\MoviesExtremeDb.mdf;Integrated Security=True;Connect Timeout=30";
+            using (SqlConnection db = new SqlConnection(con))
+            {
+                try
+                {
+                    db.Open();
+                    SqlCommand comando = new SqlCommand("SELECT IDENT_CURRENT('Ventas')", db);
+                    identity = Convert.ToInt32(comando.ExecuteScalar());
+                    db.Close();
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+            }
+            return identity;
+        }
+
     }
 }

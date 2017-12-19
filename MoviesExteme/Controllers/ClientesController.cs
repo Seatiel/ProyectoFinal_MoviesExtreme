@@ -47,7 +47,7 @@ namespace MoviesExteme.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ClienteId,Nombres,Apellido,Direccion,Telefono,Email")] Clientes clientes)
+        public ActionResult Create([Bind(Include = "ClienteId,Nombres,Direccion,Telefono,Email")] Clientes clientes)
         {
             if (ModelState.IsValid)
             {
@@ -79,7 +79,7 @@ namespace MoviesExteme.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ClienteId,Nombres,Apellido,Direccion,Telefono,Email")] Clientes clientes)
+        public ActionResult Edit([Bind(Include = "ClienteId,Nombres,Direccion,Telefono,Email")] Clientes clientes)
         {
             if (ModelState.IsValid)
             {

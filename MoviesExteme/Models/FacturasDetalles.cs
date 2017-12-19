@@ -17,7 +17,7 @@ namespace MoviesExteme.Models
 
         public int Cantidad { get; set; }
 
-        public double Precio { get; set; }        
+        public decimal Precio { get; set; }        
 
         public FacturasDetalles()
         {

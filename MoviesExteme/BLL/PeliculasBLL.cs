@@ -93,7 +93,7 @@ namespace MoviesExteme.BLL
             {
                 try
                 {
-                    listado = db.Pelicula.OrderBy(c => c.Titulo).ToList();
+                    listado = db.Pelicula.ToList();
                 }
                 catch (Exception)
                 {

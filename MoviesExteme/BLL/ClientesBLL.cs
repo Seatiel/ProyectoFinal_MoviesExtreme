@@ -95,7 +95,7 @@ namespace MoviesExteme.BLL
             {
                 try
                 {
-                    listado = db.Cliente.OrderBy(c => c.Nombres).ToList();
+                    listado = db.Cliente.ToList();
                 }
                 catch (Exception)
                 {
@@ -118,27 +118,28 @@ namespace MoviesExteme.BLL
                 throw;
             }
         }
-        //public static int Identity()
-        //{
-        //    int identity = 0;
-        //    string con =
-        //    @"Data Source=elgenerico.database.windows.net;Initial Catalog=LaGenerica;User ID=engel;Password=Valores2017";
-        //    using (SqlConnection conexion = new SqlConnection(con))
-        //    {
-        //        try
-        //        {
-        //            conexion.Open();
-        //            SqlCommand comando = new SqlCommand("SELECT IDENT_CURRENT('Clientes')", conexion);
-        //            identity = Convert.ToInt32(comando.ExecuteScalar());
-        //            conexion.Close();
-        //        }
-        //        catch (Exception)
-        //        {
-        //            throw;
-        //        }
-        //    }
-        //    return identity;
-        //}
+
+        public static int Identity()
+        {
+            int identity = 0;
+            string con =
+            @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C: \Users\seati\OneDrive for Business 1\Diplomado ITLA\MoviesExteme\MoviesExteme\App_Data\MoviesExtremeDb.mdf;Integrated Security=True;Connect Timeout=30";
+            using (SqlConnection conexion = new SqlConnection(con))
+            {
+                try
+                {
+                    conexion.Open();
+                    SqlCommand comando = new SqlCommand("SELECT IDENT_CURRENT('Clientes')", conexion);
+                    identity = Convert.ToInt32(comando.ExecuteScalar());
+                    conexion.Close();
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+            }
+            return identity;
+        }
 
     }
 }
